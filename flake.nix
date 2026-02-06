@@ -11,11 +11,30 @@
       };
       libs = with pkgs; [
         stdenv.cc.cc.lib
-        libz
+        zlib
+        libxcb
+        libGL
+        glib
+        expat
+        nspr
+        nss
+        atk
+        dbus
+        libx11
+        libxcomposite
+        libxdamage
+        libxext
+        libxfixes
+        libxrandr
+        libgbm
+        libxkbcommon
+        alsa-lib
+
       ];
     in
     {
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
+        buildInputs = [ pkgs.ffmpeg ];
         env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
       };
     };

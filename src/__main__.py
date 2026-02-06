@@ -1,8 +1,8 @@
 from moviepy import VideoFileClip, CompositeVideoClip, AudioFileClip, concatenate_videoclips
-from subtitles import sub
 from gtts import gTTS
 import requests
 import pathlib
+from pycaps import TemplateLoader
 
 
 # todo: actually scrape some social media site with an api
@@ -20,8 +20,8 @@ def tts(text, out=pathlib.Path("out.mp3")):
     tts.save(str(out))
 
 
-def combine(audio, video, subtitles, out=pathlib.Path("out.mp4")):
-    """Combines audio and video files, making video loop and adding subtitles"""
+def combine(audio, video, out=pathlib.Path("out.mp4")):
+    """Combines audio and video files, making video loop"""
 
     # loop video
     loops_required = int(audio.duration // video.duration) + 1
@@ -29,25 +29,25 @@ def combine(audio, video, subtitles, out=pathlib.Path("out.mp4")):
     looped_video = concatenate_videoclips(video_clips)
 
     clip = looped_video.subclipped(0, audio.duration).with_audio(audio)
-    clip = CompositeVideoClip([clip, subtitles])
     clip.write_videofile(out, codec="libx264", audio_codec="aac")
 
 
+print("Generating reel...")
 outdir = pathlib.Path("build")
 outdir.mkdir(parents=True, exist_ok=True)
 
 text = scrape()
 
 audio_file = outdir / "audio.mp3"
-# tts(text, out=audio_file)
+tts(text, out=audio_file)
 audio = AudioFileClip(audio_file)
 
 input_file = pathlib.Path("recording.mp4")
 video = VideoFileClip(input_file)
 
-subtitles_file = outdir / "subtitles.srt"
-sub = sub(text, audio.duration, video.size, subtitles_file)
+combined_file = outdir / "combined.mp4"
+
+combine(audio, video, combined_file)
 
 output_file = outdir / "output.mp4"
-
-combine(audio, video, sub, output_file)
+TemplateLoader("hype").with_input_video(combined_file).with_output_video(output_file).load().run()
