@@ -1,0 +1,14 @@
+[project]
+name = "reels"
+version = "0.1.0"
+description = "Automate short-form content."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "typer",
+  "gtts",
+  "typing-extensions",
+  "moviepy",
+  "pycaps[base] @ git+https://github.com/hannahfluch/pycaps.git@3b4ca18f7d6c7e99781cdde9fa72ed89eced95ef",
+  "questionary",
+]
